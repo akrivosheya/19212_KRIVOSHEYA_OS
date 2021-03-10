@@ -6,7 +6,7 @@
 #define YEARFORREF 1900
 
 int main(){
-        if(putenv("TZ=PST8PDT") < 0){
+        if(putenv("TZ=America/Los_Angeles") < 0){
                 perror("Can't change TZ");
                 return 0;
         }
