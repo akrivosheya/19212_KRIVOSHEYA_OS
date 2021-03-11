@@ -24,9 +24,5 @@ int main(){
                 califTime->tm_hour,
                 califTime->tm_min,
                 califTime->tm_sec);
-        if(putenv("TZ=") < 0){
-                perror("Can't change TZ");
-                return 0;
-        }
         return 0;
 }
