@@ -7,6 +7,7 @@
 
 #define DEFAULTSIZE 1
 #define MAXLENGTH 100
+#define BADROW -1
 
 typedef struct line_t{
         size_t length;
@@ -80,14 +81,18 @@ void printTab(line** tab, int size){
 
 void getRow(int* row){
         int count;
-        while(!(scanf("%d", row) > 0)){}
+        if(!(scanf("%d", row) > 0)){
+                *row = BADROW;
+        }
 }
 
-void printLine(char* string, int length){
-        printf("length %d\n", length);
+int printLine(char* string, int length){
         for(int i = 0; i < length; ++i){
-                putchar(string[i]);
+                if(putchar(string[i]) == EOF){
+                        return 0;
+                }
         }
+        return 1;
 }
 
 int readRows(int fd, line** tab, int size){
@@ -95,8 +100,9 @@ int readRows(int fd, line** tab, int size){
         char string[MAXLENGTH];
         getRow(&row);
         while(row != 0){
-                if(row < 0){
-                        printf("Bad rows\n");
+                if(row == BADROW){
+                        printf("Bad row\n");
+                        return 1;
                 }
                 else if(row > size){
                         printf("Too big number of row\n");
@@ -108,7 +114,9 @@ int readRows(int fd, line** tab, int size){
                         if(read(fd, string, tab[row - 1]->length) < 0){
                                 return 0;
                         }
-                        printLine(string, tab[row - 1]->length);
+                        if(!printLine(string, tab[row - 1]->length)){
+                                return 0;
+                        }
                 }
                 getRow(&row);
         }
@@ -128,19 +136,23 @@ int main(int argc, char* argv[]){
         line** tab = (line**)calloc(DEFAULTSIZE, sizeof(line*));
         if(!tab){
                 printf("Can't get memory\n");
+                close(fd);
                 return 0;
         }
         size_t size = DEFAULTSIZE;
         if(!createTab(fd, &tab, &size)){
                 free(tab);
                 printf("Can't create tab\n");
+                close(fd);
                 return 0;
         }
-        printTab(tab, size);
+        //printTab(tab, size);
+        printf("File has %d rows\nEnter index of row:\n", size);
         if(!readRows(fd, tab, size)){
                 printf("Can't read file\n");
         }
         clear(tab, size);
         free(tab);
+        close(fd);
         return 0;
 }
