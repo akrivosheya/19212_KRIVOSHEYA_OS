@@ -13,6 +13,7 @@ int putLine(list** last, char* line){
         size_t size = strlen(line);
         char* newLine = (char*)malloc((size + 1) * sizeof(char));
         if(!newLine){
+                perror("Can't allocate memory");
                 return 0;
         }
         if(!(*last)){
@@ -23,6 +24,7 @@ int putLine(list** last, char* line){
                 *last = (*last)->next;
         }
         if(!(*last)){
+                perror("Can't allocate memory");
                 free(newLine);
                 return 0;
         }
